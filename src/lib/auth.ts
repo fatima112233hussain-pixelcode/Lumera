@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import { clinics, members } from "@/db/schema";
@@ -17,6 +17,25 @@ export interface TenantSession {
 }
 
 /**
+ * The organisation's current name, straight from Clerk. Cached per request,
+ * and falls back to the passed-in cached name if the lookup fails, so a
+ * Clerk hiccup degrades to a slightly stale name rather than an error page.
+ */
+const currentOrgName = cache(
+  async (orgId: string, fallback: string): Promise<string> => {
+    try {
+      const client = await clerkClient();
+      const org = await client.organizations.getOrganization({
+        organizationId: orgId,
+      });
+      return org.name || fallback;
+    } catch {
+      return fallback;
+    }
+  },
+);
+
+/**
  * The single door every request goes through to learn which clinic it belongs
  * to. Cached per request so a page with a dozen server components pays for one
  * lookup, not a dozen.
@@ -26,16 +45,33 @@ export interface TenantSession {
  */
 export const getTenantSession = cache(
   async (): Promise<TenantSession | null> => {
-    const { userId, orgId } = await auth();
+    const { userId, orgId, orgSlug } = await auth();
     if (!userId || !orgId) return null;
 
-    const [clinic] = await db
+    const [row] = await db
       .select()
       .from(clinics)
       .where(eq(clinics.clerkOrgId, orgId))
       .limit(1);
 
-    if (!clinic) return null;
+    if (!row) return null;
+
+    // Clerk is the authority on the organisation's name; the column is a
+    // cache of it. Prefer the live claim so a rename shows up immediately
+    // rather than waiting on a webhook.
+    const liveName = await currentOrgName(orgId, row.name);
+    const clinic: Clinic =
+      liveName === row.name ? row : { ...row, name: liveName };
+
+    // Write the cache back in the background. A failure here is not worth
+    // failing the request over — the render already has the right name.
+    if (liveName !== row.name) {
+      void db
+        .update(clinics)
+        .set({ name: liveName, slug: orgSlug ?? row.slug, updatedAt: new Date() })
+        .where(eq(clinics.id, row.id))
+        .catch(() => {});
+    }
 
     const [member] = await db
       .select()
