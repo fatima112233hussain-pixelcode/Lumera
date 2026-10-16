@@ -21,13 +21,23 @@ const stagger: Variants = {
 
 export function Hero() {
   return (
-    <section className="relative isolate overflow-hidden">
-      {/* The light volume sits behind everything and bleeds off the top. */}
-      <div className="pointer-events-none absolute inset-x-0 -top-24 -z-10 h-[46rem] opacity-80">
+    <section className="relative isolate overflow-hidden bg-[oklch(0.168_0.019_288)] text-white">
+      {/* The particle field blends additively, so it needs a dark stage to
+          add light to — on a near-white ground every point washes out to
+          nothing. */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
         <AuroraBackdrop />
       </div>
-      {/* Fades the cloud into the page rather than cutting it off. */}
-      <div className="from-background pointer-events-none absolute inset-x-0 top-[28rem] -z-10 h-64 bg-gradient-to-b to-transparent" />
+      {/* Hands the eye back to the page: the stage fades into the body
+          colour rather than ending on a hard edge. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28"
+        style={{
+          background:
+            "linear-gradient(to bottom, transparent 0%, oklch(0.168 0.019 288) 62%, oklch(0.168 0.019 288) 74%, var(--background) 100%)",
+        }}
+      />
 
       <motion.div
         variants={stagger}
@@ -37,9 +47,9 @@ export function Hero() {
       >
         <motion.span
           variants={rise}
-          className="border-primary/25 bg-background/70 text-primary inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm backdrop-blur"
+          className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-sm text-white/80 backdrop-blur"
         >
-          <span className="bg-primary size-1.5 rounded-full" aria-hidden />
+          <span className="bg-warning size-1.5 rounded-full" aria-hidden />
           Free, with nothing held back
         </motion.span>
 
@@ -48,12 +58,12 @@ export function Hero() {
           className="font-display text-5xl leading-[0.98] tracking-tight text-balance sm:text-7xl"
         >
           Your clinic, running on{" "}
-          <span className="text-primary italic">light</span>.
+          <span className="bg-gradient-to-r from-[oklch(0.78_0.14_300)] to-[oklch(0.86_0.13_80)] bg-clip-text italic text-transparent">light</span>.
         </motion.h1>
 
         <motion.p
           variants={rise}
-          className="text-muted-foreground max-w-xl text-lg text-pretty"
+          className="max-w-xl text-lg text-pretty text-white/65"
         >
           Appointments, patient records, prices, invoices and printing — the
           whole front desk in one place. No card, no trial clock, no feature
@@ -73,13 +83,13 @@ export function Hero() {
           </Link>
           <Link
             href="#how"
-            className="border-border hover:bg-secondary inline-flex items-center rounded-full border px-7 py-3.5 font-medium transition"
+            className="inline-flex items-center rounded-full border border-white/25 px-7 py-3.5 font-medium transition hover:bg-white/10"
           >
             See how it works
           </Link>
         </motion.div>
 
-        <motion.p variants={rise} className="text-muted-foreground text-sm">
+        <motion.p variants={rise} className="text-sm text-white/45">
           Set up in about two minutes. Works on the desk computer and the phone
           in your pocket.
         </motion.p>

@@ -102,25 +102,31 @@ export function HowItWorks() {
       </Reveal>
 
       <div ref={ref} className="relative">
-        {/* The rail: a dim track with a bright fill tied to scroll. */}
-        <div className="bg-border absolute top-0 bottom-0 left-[1.35rem] w-px sm:left-[1.85rem]">
+        {/* The rail runs down the centre of the badge column: a dim track
+            with a bright fill tied to scroll position. */}
+        <div className="bg-border absolute top-6 bottom-6 left-6 w-px sm:left-7">
           <motion.div
             style={{ height: fill }}
             className="from-primary to-warning w-px bg-gradient-to-b"
           />
         </div>
 
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-10">
           {STEPS.map((step) => (
-            <Reveal key={step.n} className="relative pl-14 sm:pl-20">
-              <motion.div variants={rise}>
-                <span className="bg-background border-primary/30 text-primary absolute left-0 grid size-11 place-items-center rounded-full border font-mono text-sm sm:size-15">
+            <Reveal key={step.n}>
+              <motion.div
+                variants={rise}
+                className="grid grid-cols-[3rem_1fr] items-start gap-5 sm:grid-cols-[3.5rem_1fr] sm:gap-7"
+              >
+                <span className="bg-background border-primary/30 text-primary grid size-12 place-items-center rounded-full border font-mono text-sm sm:size-14">
                   {step.n}
                 </span>
-                <h3 className="text-xl font-medium">{step.title}</h3>
-                <p className="text-muted-foreground mt-2 max-w-xl text-pretty">
-                  {step.body}
-                </p>
+                <div className="pt-2.5 sm:pt-3.5">
+                  <h3 className="text-xl font-medium">{step.title}</h3>
+                  <p className="text-muted-foreground mt-2 max-w-xl text-pretty">
+                    {step.body}
+                  </p>
+                </div>
               </motion.div>
             </Reveal>
           ))}

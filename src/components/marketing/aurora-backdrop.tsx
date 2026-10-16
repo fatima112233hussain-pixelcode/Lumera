@@ -16,7 +16,7 @@ function AuroraFallback() {
       className="size-full"
       style={{
         background:
-          "radial-gradient(60% 50% at 50% 45%, color-mix(in oklch, var(--primary) 38%, transparent), transparent 70%), radial-gradient(40% 40% at 70% 65%, color-mix(in oklch, var(--warning) 26%, transparent), transparent 70%)",
+          "radial-gradient(55% 55% at 50% 42%, oklch(0.62 0.2 295 / 0.55), transparent 70%), radial-gradient(40% 40% at 66% 62%, oklch(0.8 0.15 75 / 0.3), transparent 70%)",
         filter: "blur(40px)",
       }}
     />

@@ -4,71 +4,77 @@ import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 
 /**
- * Lumera's hero: a slow-turning volume of light built from thousands of
- * points, pulled into a torus knot and drifting on curl-like noise.
+ * Lumera's hero: a slowly turning sphere of light, drawn as a point cloud
+ * with a bright rim and a sparse interior.
  *
- * Deliberately not an object — AesthetIQ's hero is a rendered invoice card,
- * and this product is the free one, so it reads as light rather than
- * paperwork. The whole thing is one BufferGeometry and one ShaderMaterial:
- * the motion happens on the GPU, so the cost is flat regardless of count.
+ * A sphere rather than a knot on purpose — a knot photographs differently
+ * at every angle, so the hero looked like a different thing on every visit,
+ * and at small sizes the folds read as noise. A shell has one silhouette
+ * from every direction, which is what a hero needs.
+ *
+ * The structure comes from where the points sit, not from their colour:
+ * density is biased hard toward the surface, so the edge is a crisp ring of
+ * light and the middle stays open enough to read the headline through.
  */
 
 const VERTEX = /* glsl */ `
   uniform float uTime;
   uniform float uSize;
+  uniform float uPixelRatio;
   uniform vec2 uPointer;
   attribute float aScale;
   attribute vec3 aSeed;
-  varying float vFade;
-
-  // Cheap value noise — enough to break up the lattice without the cost of
-  // a real simplex implementation on every vertex, every frame.
-  float hash(vec3 p) {
-    return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453123);
-  }
+  varying float vGlow;
+  varying float vSeed;
 
   void main() {
     vec3 pos = position;
 
-    // Breathing drift: each point follows its own slow loop, seeded so the
-    // field never pulses in unison.
-    float t = uTime * 0.22 + aSeed.x * 6.283;
+    // Each point drifts on its own small loop, so the shell shimmers
+    // rather than sitting still.
+    float t = uTime * 0.3 + aSeed.x * 6.283;
     pos += vec3(
-      sin(t + aSeed.y * 3.0) * 0.18,
-      cos(t * 1.3 + aSeed.z * 3.0) * 0.18,
-      sin(t * 0.8 + aSeed.x * 3.0) * 0.18
-    );
+      sin(t + aSeed.y * 5.0),
+      cos(t * 1.2 + aSeed.z * 5.0),
+      sin(t * 0.9 + aSeed.x * 5.0)
+    ) * 0.07;
 
-    // Pointer parallax, strongest on the points nearest the camera so the
-    // volume feels like it has depth rather than sliding as one plane.
-    float depth = smoothstep(-2.0, 2.0, pos.z);
-    pos.xy += uPointer * depth * 0.42;
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
 
-    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-    gl_Position = projectionMatrix * mvPosition;
+    // Pointer parallax, strongest at the front of the shell.
+    float depth = smoothstep(-3.0, 3.0, mv.z);
+    mv.xy += uPointer * depth * 0.5;
 
-    // Perspective-correct sizing, plus a per-point variation.
-    gl_PointSize = uSize * aScale * (1.0 / -mvPosition.z);
+    gl_Position = projectionMatrix * mv;
+    gl_PointSize = uSize * uPixelRatio * aScale * (1.0 / -mv.z);
 
-    // Fade with distance so the far side of the knot sits behind the near
-    // side instead of reading as one flat sheet of dots.
-    vFade = smoothstep(-5.0, 1.5, mvPosition.z) * (0.45 + hash(aSeed) * 0.55);
+    // Front of the shell is brighter than the back, which is what gives a
+    // flat scatter of points the appearance of a volume.
+    vGlow = smoothstep(-4.0, 2.0, mv.z);
+    vSeed = aSeed.x;
   }
 `;
 
 const FRAGMENT = /* glsl */ `
   uniform vec3 uColorA;
   uniform vec3 uColorB;
-  varying float vFade;
+  varying float vGlow;
+  varying float vSeed;
 
   void main() {
-    // Round the square point sprite and feather its edge.
     vec2 uv = gl_PointCoord - 0.5;
     float d = length(uv);
     if (d > 0.5) discard;
-    float alpha = smoothstep(0.5, 0.08, d) * vFade;
 
-    gl_FragColor = vec4(mix(uColorA, uColorB, vFade), alpha);
+    // A soft core with a long falloff reads as a glowing speck rather than
+    // a hard dot.
+    float core = smoothstep(0.5, 0.0, d);
+    float alpha = core * core * (0.1 + vGlow * 0.5);
+
+    // Amber is the minority colour: a few points in it keep the field from
+    // being a single flat violet.
+    vec3 tint = mix(uColorA, uColorB, step(0.88, vSeed));
+    gl_FragColor = vec4(tint, alpha);
   }
 `;
 
@@ -114,34 +120,34 @@ export function AuroraScene({ onUnsupported }: { onUnsupported?: () => void }) {
       container.appendChild(renderer.domElement);
 
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-      camera.position.set(0, 0, 7.2);
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+      camera.position.set(0, 0, 8);
 
-      // Sample points off a torus knot so the cloud has a readable silhouette
-      // instead of being an undifferentiated ball of noise.
-      const COUNT = lowPower ? 14000 : 42000;
-      const source = new THREE.TorusKnotGeometry(2.0, 0.62, 420, 48, 2, 3);
-      const sourcePositions = source.attributes.position;
-
+      const COUNT = lowPower ? 6500 : 17000;
       const positions = new Float32Array(COUNT * 3);
       const scales = new Float32Array(COUNT);
       const seeds = new Float32Array(COUNT * 3);
 
       for (let i = 0; i < COUNT; i++) {
-        const v = Math.floor(Math.random() * sourcePositions.count);
-        // Scatter around the surface point rather than sitting exactly on it,
-        // which is what turns a mesh into a volume.
-        const spread = 0.26;
-        positions[i * 3] = sourcePositions.getX(v) + (Math.random() - 0.5) * spread;
-        positions[i * 3 + 1] = sourcePositions.getY(v) + (Math.random() - 0.5) * spread;
-        positions[i * 3 + 2] = sourcePositions.getZ(v) + (Math.random() - 0.5) * spread;
+        // Even directions on the sphere, via the standard z-then-angle
+        // method — rejection or naive angle pairs would bunch at the poles.
+        const u = Math.random() * 2 - 1;
+        const theta = Math.random() * Math.PI * 2;
+        const r = Math.sqrt(1 - u * u);
 
-        scales[i] = 0.5 + Math.random() * 1.6;
+        // Radius biased hard to the surface: a high power pushes almost
+        // everything into a thin shell and leaves the centre open.
+        const radius = 2.7 * Math.pow(Math.random(), 0.06);
+
+        positions[i * 3] = Math.cos(theta) * r * radius;
+        positions[i * 3 + 1] = u * radius;
+        positions[i * 3 + 2] = Math.sin(theta) * r * radius;
+
+        scales[i] = 0.45 + Math.random() * 1.3;
         seeds[i * 3] = Math.random();
         seeds[i * 3 + 1] = Math.random();
         seeds[i * 3 + 2] = Math.random();
       }
-      source.dispose();
 
       const geometry = new THREE.BufferGeometry();
       geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -150,11 +156,10 @@ export function AuroraScene({ onUnsupported }: { onUnsupported?: () => void }) {
 
       const uniforms = {
         uTime: { value: 0 },
-        uSize: { value: lowPower ? 420 : 300 },
+        uSize: { value: lowPower ? 95 : 72 },
+        uPixelRatio: { value: renderer.getPixelRatio() },
         uPointer: { value: new THREE.Vector2(0, 0) },
-        // Violet into amber: the brand's two poles, so the cloud carries the
-        // palette rather than being generic blue.
-        uColorA: { value: new THREE.Color(0x6d28d9) },
+        uColorA: { value: new THREE.Color(0x9f7aea) },
         uColorB: { value: new THREE.Color(0xfbbf24) },
       };
 
@@ -164,13 +169,11 @@ export function AuroraScene({ onUnsupported }: { onUnsupported?: () => void }) {
         fragmentShader: FRAGMENT,
         transparent: true,
         depthWrite: false,
-        // Additive, so overlapping points build light where the knot folds
-        // over itself — that is where the glow comes from.
         blending: THREE.AdditiveBlending,
       });
 
-      const points = new THREE.Points(geometry, material);
-      scene.add(points);
+      const field = new THREE.Points(geometry, material);
+      scene.add(field);
 
       function resize() {
         const rect = container!.getBoundingClientRect();
@@ -179,6 +182,7 @@ export function AuroraScene({ onUnsupported }: { onUnsupported?: () => void }) {
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
         renderer.setSize(w, h);
+        uniforms.uPixelRatio.value = renderer.getPixelRatio();
       }
       resize();
       const resizeObserver = new ResizeObserver(resize);
@@ -209,15 +213,13 @@ export function AuroraScene({ onUnsupported }: { onUnsupported?: () => void }) {
         p.y += (pointerTarget.y - p.y) * 0.04;
 
         if (!reducedMotion) {
-          points.rotation.y = t * 0.09;
-          points.rotation.x = Math.sin(t * 0.15) * 0.16;
+          field.rotation.y = t * 0.075;
+          field.rotation.x = Math.sin(t * 0.12) * 0.1;
         }
 
-        // Entrance: the cloud scales up once, so the first paint is a reveal
-        // rather than a hard cut.
-        const intro = Math.min(t / 1.6, 1);
+        const intro = Math.min(t / 1.8, 1);
         const eased = 1 - Math.pow(1 - intro, 4);
-        points.scale.setScalar(0.72 + eased * 0.28);
+        field.scale.setScalar(0.8 + eased * 0.2);
 
         renderer.render(scene, camera);
         frame = requestAnimationFrame(draw);
