@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 /** Everything the marketing site and the auth flow need, signed in or not. */
 const isPublicRoute = createRouteMatcher([
   "/",
-  "/pricing",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/webhooks(.*)",
