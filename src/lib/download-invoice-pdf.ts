@@ -1,15 +1,21 @@
 "use client";
 
-/** Paper sizes a clinic can set up a printer for, in PDF points. */
-const PAPER: Record<string, { width: number; height: number; margin: number }> = {
-  // A4 and A5 keep a normal document margin.
+/**
+ * Paper a clinic can set a printer up for.
+ *
+ * `continuous` marks a receipt roll: the paper has a width but no page
+ * length, so the PDF page is cut to whatever the invoice actually needs
+ * instead of being padded out to a sheet. Sheet sizes keep a real page
+ * height and spill onto a second page when an invoice is long.
+ */
+const PAPER: Record<
+  string,
+  { width: number; height: number; margin: number; continuous?: boolean }
+> = {
   a4: { width: 595.28, height: 841.89, margin: 24 },
   a5: { width: 419.53, height: 595.28, margin: 18 },
-  // Receipt rolls are continuous, so height is a per-page slice rather than a
-  // real sheet, and the margin is small because the paper is narrow to start
-  // with.
-  thermal_80: { width: 226.77, height: 1000, margin: 8 },
-  thermal_58: { width: 164.41, height: 1000, margin: 6 },
+  thermal_80: { width: 226.77, height: 0, margin: 8, continuous: true },
+  thermal_58: { width: 164.41, height: 0, margin: 6, continuous: true },
 };
 
 /**
@@ -20,12 +26,12 @@ const PAPER: Record<string, { width: number; height: number; margin: number }> =
  * always prompts for a filename regardless of what document.title says.
  *
  * `paperSize` comes from the clinic's chosen printer; an unknown value falls
- * back to A4 rather than failing, since a saved template could name a size
- * this build no longer knows about.
+ * back to the 80mm roll rather than failing, since a saved template could
+ * name a size this build no longer knows about.
  */
 export async function downloadInvoicePdf(
   filename: string,
-  paperSize = "a4",
+  paperSize = "thermal_80",
 ): Promise<void> {
   const element = document.getElementById("invoice-sheet");
   if (!element) throw new Error("Could not find the invoice to export.");
@@ -44,31 +50,38 @@ export async function downloadInvoicePdf(
   });
 
   const imgData = canvas.toDataURL("image/png");
-  const paper = PAPER[paperSize] ?? PAPER.a4;
-  const { width: pageWidth, height: pageHeight, margin } = paper;
-
-  const pdf = new jsPDF({
-    unit: "pt",
-    format: [pageWidth, pageHeight],
-  });
+  const paper = PAPER[paperSize] ?? PAPER.thermal_80;
+  const { width: pageWidth, margin } = paper;
 
   const contentWidth = pageWidth - margin * 2;
   const imgHeight = (canvas.height * contentWidth) / canvas.width;
 
-  let heightLeft = imgHeight;
-  let position = margin;
+  // A roll has no page length, so the page becomes exactly as long as the
+  // receipt — one continuous slip, which is what comes out of the printer.
+  const pageHeight = paper.continuous
+    ? imgHeight + margin * 2
+    : paper.height;
 
-  pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight);
-  heightLeft -= pageHeight - margin * 2;
+  const pdf = new jsPDF({ unit: "pt", format: [pageWidth, pageHeight] });
 
-  // Long invoices (many line items) span more than one page — each subsequent
-  // page repeats the same image shifted up, which is how jsPDF's own docs
-  // handle a canvas taller than one page.
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight - margin;
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", margin, position, contentWidth, imgHeight);
-    heightLeft -= pageHeight - margin * 2;
+  pdf.addImage(imgData, "PNG", margin, margin, contentWidth, imgHeight);
+
+  // Only sheet sizes can overflow; a continuous page was cut to fit above.
+  if (!paper.continuous) {
+    const usable = pageHeight - margin * 2;
+    let heightLeft = imgHeight - usable;
+    while (heightLeft > 0) {
+      pdf.addPage();
+      pdf.addImage(
+        imgData,
+        "PNG",
+        margin,
+        margin - (imgHeight - heightLeft),
+        contentWidth,
+        imgHeight,
+      );
+      heightLeft -= usable;
+    }
   }
 
   pdf.save(`${filename}.pdf`);

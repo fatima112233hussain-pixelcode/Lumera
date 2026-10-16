@@ -147,8 +147,10 @@ export async function provisionClinic(input: ProvisionInput) {
 
     await tx.insert(printTemplates).values({
       clinicId: clinic.id,
-      name: "Standard A4 Invoice",
-      paperSize: "a4",
+      // A receipt roll is what sits at a clinic counter, and the invoice
+      // sheet is designed as a receipt — so that is the sensible default.
+      name: "Counter receipt printer",
+      paperSize: "thermal_80",
       isDefault: true,
     });
 
