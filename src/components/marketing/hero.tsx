@@ -21,7 +21,7 @@ const stagger: Variants = {
 
 export function Hero() {
   return (
-    <section className="relative isolate overflow-hidden bg-[oklch(0.168_0.019_288)] text-white">
+    <section className="relative isolate overflow-hidden bg-[oklch(0.17_0.028_262)] text-white">
       {/* The particle field blends additively, so it needs a dark stage to
           add light to — on a near-white ground every point washes out to
           nothing. */}
@@ -35,7 +35,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28"
         style={{
           background:
-            "linear-gradient(to bottom, transparent 0%, oklch(0.168 0.019 288) 62%, oklch(0.168 0.019 288) 74%, var(--background) 100%)",
+            "linear-gradient(to bottom, transparent 0%, oklch(0.17 0.028 262) 62%, oklch(0.17 0.028 262) 74%, var(--background) 100%)",
         }}
       />
 
@@ -49,7 +49,7 @@ export function Hero() {
           variants={rise}
           className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-sm text-white/80 backdrop-blur"
         >
-          <span className="bg-warning size-1.5 rounded-full" aria-hidden />
+          <span className="size-1.5 rounded-full bg-[oklch(0.88_0.08_228)]" aria-hidden />
           Free, with nothing held back
         </motion.span>
 
@@ -58,7 +58,7 @@ export function Hero() {
           className="font-display text-5xl leading-[0.98] tracking-tight text-balance sm:text-7xl"
         >
           Your clinic, running on{" "}
-          <span className="bg-gradient-to-r from-[oklch(0.78_0.14_300)] to-[oklch(0.86_0.13_80)] bg-clip-text italic text-transparent">light</span>.
+          <span className="bg-gradient-to-r from-[oklch(0.74_0.15_258)] to-[oklch(0.88_0.08_228)] bg-clip-text italic text-transparent">light</span>.
         </motion.h1>
 
         <motion.p

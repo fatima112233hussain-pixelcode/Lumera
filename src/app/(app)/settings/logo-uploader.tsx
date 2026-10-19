@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { removeLogo, setLogoUrl } from "./actions";
 
 /**
- * The logo is set from a link rather than an upload: Lumera is free to run,
+ * The logo is set from a link rather than an upload: Softco is free to run,
  * and file storage is the one piece that would cost the operator money. Any
  * public image URL works, which in practice means the clinic's own website
  * or any image host.

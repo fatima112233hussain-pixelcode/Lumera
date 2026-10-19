@@ -128,7 +128,7 @@ export async function currentMaxDiscount(): Promise<number> {
 
 /**
  * Kept so every write path reads the same as before, but nothing is gated:
- * Lumera is free, so there is no lapsed state to lock anyone out of. The
+ * Softco is free, so there is no lapsed state to lock anyone out of. The
  * name stays requireActivePermission rather than being renamed across
  * every action file, and the error type stays exported because callers
  * still catch it.

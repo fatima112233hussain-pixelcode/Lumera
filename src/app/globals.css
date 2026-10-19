@@ -52,80 +52,82 @@
 }
 
 :root {
-  /* Lumera runs on violet with a warm amber counterweight. The neutrals
-     carry a trace of the violet hue so greys sit with the accent rather
-     than against it, and the page ground is a warm off-white instead of
-     pure white — it reads as paper under clinic lighting. */
-  --background: oklch(0.988 0.004 300);
-  --foreground: oklch(0.205 0.021 285);
+  /* Softco's colours: the blue of the Softco wordmark, pushed a
+     little brighter toward the site's call-to-action blue so buttons still
+     read as buttons, with a light sky blue as the secondary accent. The
+     neutrals carry a trace of the same hue so greys sit with the blue
+     rather than against it. */
+  --background: oklch(0.988 0.004 262);
+  --foreground: oklch(0.215 0.03 262);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.205 0.021 285);
+  --card-foreground: oklch(0.215 0.03 262);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.205 0.021 285);
-  --primary: oklch(0.545 0.198 295);
-  --primary-foreground: oklch(0.985 0.008 300);
-  --secondary: oklch(0.962 0.011 300);
-  --secondary-foreground: oklch(0.29 0.032 292);
-  --muted: oklch(0.962 0.011 300);
-  --muted-foreground: oklch(0.525 0.026 290);
-  --accent: oklch(0.945 0.038 300);
-  --accent-foreground: oklch(0.40 0.118 295);
+  --popover-foreground: oklch(0.215 0.03 262);
+  --primary: oklch(0.52 0.19 262);
+  --primary-foreground: oklch(0.985 0.006 262);
+  --secondary: oklch(0.962 0.011 262);
+  --secondary-foreground: oklch(0.3 0.05 262);
+  --muted: oklch(0.962 0.011 262);
+  --muted-foreground: oklch(0.52 0.03 262);
+  --accent: oklch(0.945 0.035 262);
+  --accent-foreground: oklch(0.42 0.14 262);
   --destructive: oklch(0.585 0.204 27.2);
   --success: oklch(0.63 0.142 155);
   --warning: oklch(0.745 0.158 68);
-  --border: oklch(0.912 0.012 297);
-  --input: oklch(0.912 0.012 297);
-  --ring: oklch(0.545 0.198 295);
-  --chart-1: oklch(0.545 0.198 295);
-  --chart-2: oklch(0.745 0.158 68);
+  --border: oklch(0.912 0.013 262);
+  --input: oklch(0.912 0.013 262);
+  --ring: oklch(0.52 0.19 262);
+  --chart-1: oklch(0.52 0.19 262);
+  --chart-2: oklch(0.74 0.12 230);
   --chart-3: oklch(0.63 0.142 155);
-  --chart-4: oklch(0.62 0.182 340);
-  --chart-5: oklch(0.60 0.148 235);
+  --chart-4: oklch(0.745 0.158 68);
+  --chart-5: oklch(0.62 0.182 340);
   --radius: 0.875rem;
-  --sidebar: oklch(0.974 0.009 300);
-  --sidebar-foreground: oklch(0.205 0.021 285);
-  --sidebar-primary: oklch(0.545 0.198 295);
-  --sidebar-primary-foreground: oklch(0.985 0.008 300);
-  --sidebar-accent: oklch(0.945 0.038 300);
-  --sidebar-accent-foreground: oklch(0.40 0.118 295);
-  --sidebar-border: oklch(0.912 0.012 297);
-  --sidebar-ring: oklch(0.545 0.198 295);
+  --sidebar: oklch(0.974 0.009 262);
+  --sidebar-foreground: oklch(0.215 0.03 262);
+  --sidebar-primary: oklch(0.52 0.19 262);
+  --sidebar-primary-foreground: oklch(0.985 0.006 262);
+  --sidebar-accent: oklch(0.945 0.035 262);
+  --sidebar-accent-foreground: oklch(0.42 0.14 262);
+  --sidebar-border: oklch(0.912 0.013 262);
+  --sidebar-ring: oklch(0.52 0.19 262);
 }
 
 .dark {
-  --background: oklch(0.168 0.019 288);
-  --foreground: oklch(0.962 0.008 300);
-  --card: oklch(0.212 0.024 288);
-  --card-foreground: oklch(0.962 0.008 300);
-  --popover: oklch(0.212 0.024 288);
-  --popover-foreground: oklch(0.962 0.008 300);
-  --primary: oklch(0.755 0.158 296);
-  --primary-foreground: oklch(0.192 0.048 292);
-  --secondary: oklch(0.272 0.028 288);
-  --secondary-foreground: oklch(0.962 0.008 300);
-  --muted: oklch(0.272 0.028 288);
-  --muted-foreground: oklch(0.712 0.022 294);
-  --accent: oklch(0.318 0.052 294);
-  --accent-foreground: oklch(0.875 0.098 298);
+  /* Softco's deep navy (#1C3159) is the family the dark ground comes from. */
+  --background: oklch(0.17 0.028 262);
+  --foreground: oklch(0.962 0.008 262);
+  --card: oklch(0.215 0.034 262);
+  --card-foreground: oklch(0.962 0.008 262);
+  --popover: oklch(0.215 0.034 262);
+  --popover-foreground: oklch(0.962 0.008 262);
+  --primary: oklch(0.72 0.15 258);
+  --primary-foreground: oklch(0.18 0.05 262);
+  --secondary: oklch(0.275 0.036 262);
+  --secondary-foreground: oklch(0.962 0.008 262);
+  --muted: oklch(0.275 0.036 262);
+  --muted-foreground: oklch(0.72 0.025 262);
+  --accent: oklch(0.32 0.06 262);
+  --accent-foreground: oklch(0.87 0.08 258);
   --destructive: oklch(0.702 0.176 22.2);
   --success: oklch(0.73 0.148 155);
   --warning: oklch(0.805 0.148 70);
   --border: oklch(1 0 0 / 11%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.755 0.158 296);
-  --chart-1: oklch(0.755 0.158 296);
-  --chart-2: oklch(0.805 0.148 70);
+  --ring: oklch(0.72 0.15 258);
+  --chart-1: oklch(0.72 0.15 258);
+  --chart-2: oklch(0.84 0.09 230);
   --chart-3: oklch(0.73 0.148 155);
-  --chart-4: oklch(0.75 0.162 340);
-  --chart-5: oklch(0.72 0.138 235);
-  --sidebar: oklch(0.192 0.022 288);
-  --sidebar-foreground: oklch(0.962 0.008 300);
-  --sidebar-primary: oklch(0.755 0.158 296);
-  --sidebar-primary-foreground: oklch(0.192 0.048 292);
-  --sidebar-accent: oklch(0.318 0.052 294);
-  --sidebar-accent-foreground: oklch(0.875 0.098 298);
+  --chart-4: oklch(0.805 0.148 70);
+  --chart-5: oklch(0.75 0.162 340);
+  --sidebar: oklch(0.195 0.031 262);
+  --sidebar-foreground: oklch(0.962 0.008 262);
+  --sidebar-primary: oklch(0.72 0.15 258);
+  --sidebar-primary-foreground: oklch(0.18 0.05 262);
+  --sidebar-accent: oklch(0.32 0.06 262);
+  --sidebar-accent-foreground: oklch(0.87 0.08 258);
   --sidebar-border: oklch(1 0 0 / 11%);
-  --sidebar-ring: oklch(0.755 0.158 296);
+  --sidebar-ring: oklch(0.72 0.15 258);
 }
 
 

@@ -107,7 +107,7 @@ export function HowItWorks() {
         <div className="bg-border absolute top-6 bottom-6 left-6 w-px sm:left-7">
           <motion.div
             style={{ height: fill }}
-            className="from-primary to-warning w-px bg-gradient-to-b"
+            className="from-primary to-chart-2 w-px bg-gradient-to-b"
           />
         </div>
 

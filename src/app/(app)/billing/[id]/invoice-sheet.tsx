@@ -196,6 +196,9 @@ export function InvoiceSheet({
           <p className="text-muted-foreground/70 mt-6 text-center font-mono text-[0.65rem] tracking-widest uppercase">
             Thank you
           </p>
+          <p className="text-muted-foreground/60 mt-2 text-center text-[0.6rem]">
+            Software by Softco Digital Inc. · softcodigitalinc.com
+          </p>
         </div>
 
         {/* Torn-paper foot, mirroring the perforated header. */}

@@ -27,11 +27,15 @@ const display = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: "Lumera — Free clinic management",
-    template: "%s · Lumera",
+    default: "Softco — Free clinic management",
+    template: "%s · Softco",
   },
   description:
     "Appointments, treatment records, invoicing and printing for aesthetic clinics. Free, for every clinic, on every device.",
+  applicationName: "Softco",
+  authors: [{ name: "Softco Digital Inc.", url: "https://softcodigitalinc.com" }],
+  creator: "Softco Digital Inc.",
+  publisher: "Softco Digital Inc.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

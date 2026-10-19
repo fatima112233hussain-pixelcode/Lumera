@@ -4,9 +4,9 @@ import { UserButton, OrganizationSwitcher } from "@clerk/nextjs";
 import { ensureClinicForSession } from "@/lib/ensure-clinic";
 import { can } from "@/lib/permissions";
 import { SidebarNav, type NavItem } from "@/components/app/sidebar";
-import { LumeraMark } from "@/components/marketing/lumera-mark";
 import { ThemeToggle } from "@/components/app/theme-toggle";
 import { MobileNav } from "@/components/app/mobile-nav";
+import { SoftcoLogo } from "@/components/brand/softco-logo";
 
 // Every render here depends on the signed-in tenant and must never
 // be cached or shared across requests.
@@ -43,7 +43,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       <div className="flex flex-1">
         <aside className="bg-sidebar no-print hidden w-60 shrink-0 flex-col border-r lg:flex">
           <div className="flex h-14 items-center gap-2 px-3">
-            <LumeraMark className="size-6 shrink-0" />
+            <SoftcoLogo variant="mark" className="size-6 shrink-0" />
             {/* Clicking this is how a signed-in owner moves between the
                 clinics they belong to — the account menu alone never shows
                 that list, only "Manage account" and "Sign out". */}

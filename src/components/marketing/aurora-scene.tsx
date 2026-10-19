@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 
 /**
- * Lumera's hero: a slowly turning sphere of light, drawn as a point cloud
+ * Softco's hero: a slowly turning sphere of light, drawn as a point cloud
  * with a bright rim and a sparse interior.
  *
  * A sphere rather than a knot on purpose — a knot photographs differently
@@ -71,8 +71,8 @@ const FRAGMENT = /* glsl */ `
     float core = smoothstep(0.5, 0.0, d);
     float alpha = core * core * (0.1 + vGlow * 0.5);
 
-    // Amber is the minority colour: a few points in it keep the field from
-    // being a single flat violet.
+    // Sky blue is the minority colour: a few points in it keep the field
+    // from being a single flat Softco blue.
     vec3 tint = mix(uColorA, uColorB, step(0.88, vSeed));
     gl_FragColor = vec4(tint, alpha);
   }
@@ -159,8 +159,8 @@ export function AuroraScene({ onUnsupported }: { onUnsupported?: () => void }) {
         uSize: { value: lowPower ? 95 : 72 },
         uPixelRatio: { value: renderer.getPixelRatio() },
         uPointer: { value: new THREE.Vector2(0, 0) },
-        uColorA: { value: new THREE.Color(0x9f7aea) },
-        uColorB: { value: new THREE.Color(0xfbbf24) },
+        uColorA: { value: new THREE.Color(0x5b8cff) },
+        uColorB: { value: new THREE.Color(0x97ddff) },
       };
 
       const material = new THREE.ShaderMaterial({

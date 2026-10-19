@@ -55,7 +55,7 @@ export async function generateMetadata({
     ? `${invoice.number} — ${patient.fullName}`
     : invoice.number;
 
-  // .absolute skips the layout's "%s · Lumera" template — the saved PDF's
+  // .absolute skips the layout's "%s · Softco" template — the saved PDF's
   // filename should be the invoice itself, not padded with the brand name.
   return { title: { absolute: title } };
 }

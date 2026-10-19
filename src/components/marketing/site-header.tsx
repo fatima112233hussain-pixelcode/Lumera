@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/app/theme-toggle";
-import { LumeraMark } from "@/components/marketing/lumera-mark";
+import { SoftcoLogo } from "@/components/brand/softco-logo";
 
 /**
  * Transparent over the hero's dark stage, then solid once the page has
@@ -31,10 +31,17 @@ export function SiteHeader() {
       <nav className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-white transition-colors group-data-[scrolled=true]/header:text-foreground"
+          aria-label="Softco home"
+          className="flex items-center"
         >
-          <LumeraMark className="size-7" />
-          <span className="font-display text-xl tracking-tight">Lumera</span>
+          {/* White over the dark hero, brand blue once the bar turns solid
+              on a light page. */}
+          <SoftcoLogo
+            tone="white"
+            className="h-8 group-data-[scrolled=true]/header:hidden"
+            priority
+          />
+          <SoftcoLogo className="hidden h-8 group-data-[scrolled=true]/header:inline-flex" />
         </Link>
 
         <div className="ml-auto hidden items-center gap-7 text-sm text-white/65 transition-colors group-data-[scrolled=true]/header:text-muted-foreground sm:flex">
